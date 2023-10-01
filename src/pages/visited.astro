@@ -1,0 +1,44 @@
+---
+import Layout from "../layouts/Layout.astro";
+---
+
+<Layout title="Locations Visited">
+	<div id="map" style="width:100vw;height:100vh"></div>
+</Layout>
+
+<script>
+	import { MarkerClusterer } from "@googlemaps/markerclusterer";
+	import { Loader as GoogleApi } from "@googlemaps/js-api-loader";
+
+	async function initMap() {
+		const { Map } = await google.maps.importLibrary("maps");
+
+		const result = await fetch("/get-locations");
+		const rows = await result.json();
+
+		const markers = [];
+		const map = new Map(document.getElementById("map"), {
+			center: { lat: 40.970007, lng: -109.039027},
+			zoom: 6,
+		});
+
+		for (let row of rows) {
+			const latLng = new google.maps.LatLng(row.lat, row.lng);
+			const marker = new google.maps.Marker({
+				position: latLng,
+				title: row.lat + ", " + row.lng,
+			});
+			markers.push(marker);
+		}
+
+		const markerCluster = new MarkerClusterer({ map, markers });
+	}
+
+	// Load Google APIs.
+	const googleApi = new GoogleApi({
+		apiKey: import.meta.env.PUBLIC_MAPKEY,
+		version: "weekly",
+	});
+
+	// Deprecared load() function but it's what the docs continue to say to do.
+	googleApi.load().then(initMap);

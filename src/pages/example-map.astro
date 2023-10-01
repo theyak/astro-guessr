@@ -1,0 +1,103 @@
+---
+// Example of using a Google Map component
+// API Key should be stored in PUBLIC_MAPKEY
+// API Key can be managed at https://console.cloud.google.com/apis/credentials
+import Layout from "../layouts/Layout.astro";
+---
+<Layout title="Example Map">
+	<div id="map" style="width:100vw;height:100vh"></div>
+</Layout>
+
+<script>
+	import insidePolygon from "point-in-polygon-hao";
+	import { MarkerClusterer } from "@googlemaps/markerclusterer";
+	import { Loader as GoogleApi } from "@googlemaps/js-api-loader";
+
+	const mountainWest = [
+		[
+			[-114.07045825499046, 41.988751328532004],
+			[-113.99598924835746, 37.02217731832515],
+			[-102.06579517646941, 36.99128455770504],
+			[-102.05393832455593, 41.00698218343436],
+			[-104.06168353124258, 41.091262702251925],
+			[-104.01774050555784, 44.99350139418178],
+			[-111.0688274291036, 45.0231130748190],
+			[-111.05159105735109, 41.99411684641467],
+			[-114.07045825499046, 41.988751328532004]
+		], [
+			// If you were to cut a hole in the polygon, it would go here.
+		]
+	];
+
+	// Sorry, @types/googlemaps didn't work as it was missing importLibrary
+	declare var google: { maps: any };
+
+	let map;
+
+	function getRandomWestCoordinate() {
+		let coordinate = getRandomCoordinate();
+		let point = [coordinate.longitude, coordinate.latitude];
+
+		if (insidePolygon(point, mountainWest)) {
+			return coordinate;
+		} else {
+			return getRandomWestCoordinate();
+		}
+	}
+
+	function getRandomCoordinate() {
+		// Define latitude and longitude ranges for the states
+		const minLatitude = 37; // Southernmost point
+		const maxLatitude = 45; // Northernmost point
+		const minLongitude = -114; // Westernmost point
+		const maxLongitude = -102; // Easternmost point
+
+		// Generate random latitude and longitude values within the defined ranges
+		const randomLatitude =
+			Math.random() * (maxLatitude - minLatitude) + minLatitude;
+		const randomLongitude =
+			Math.random() * (maxLongitude - minLongitude) + minLongitude;
+
+		// Return the random coordinate as an object
+		return {
+			latitude: randomLatitude,
+			longitude: randomLongitude,
+		};
+	}
+
+	async function initMap() {
+		const { Map } = await google.maps.importLibrary("maps");
+
+		const markers = [];
+		map = new Map(document.getElementById("map"), {
+			center: { lat: 40.970007, lng: -109.039027},
+			zoom: 6,
+		});
+
+		for (var i = 0; i < 200; i++) {
+			const location = getRandomWestCoordinate();
+
+			var latLng = new google.maps.LatLng(
+				location.latitude,
+				location.longitude
+			);
+			var marker = new google.maps.Marker({
+				position: latLng,
+				title: location.latitude + ", " + location.longitude
+			});
+			markers.push(marker);
+		}
+
+		const markerCluster = new MarkerClusterer({ map, markers });
+	}
+
+	// Load Google APIs.
+	const googleApi = new GoogleApi({
+		apiKey: import.meta.env.PUBLIC_MAPKEY,
+		version: "weekly",
+	});
+
+	// Deprecared load() function but it's what the docs continue to say to do.
+	googleApi.load().then(initMap);
+
+</script>
