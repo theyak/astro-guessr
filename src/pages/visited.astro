@@ -13,7 +13,10 @@ import Layout from "../layouts/Layout.astro";
 	async function initMap() {
 		const { Map } = await google.maps.importLibrary("maps");
 
-		const result = await fetch("/get-locations");
+		// We'll have to actually implement login logic at some point.
+		const token = localStorage.getItem("user_token") || "";
+
+		const result = await fetch(`/get-locations?token=${token}`);
 		const rows = await result.json();
 
 		const markers = [];
