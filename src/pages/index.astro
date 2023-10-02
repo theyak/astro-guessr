@@ -35,33 +35,34 @@ import Card from '../components/Card.astro';
 		</svg>
 		<h1>Welcome to <span class="text-gradient">AstroGuessr</span></h1>
 		<p class="instructions">
-			To get started, open the directory <code>src/pages</code> in your project.<br />
-			<strong>Code Challenge:</strong> Tweak the "Welcome to Astro" message above.
+			To get started, you'll need <a class="text-blue-500" href="https://www.tampermonkey.net/">TamperMonkey</a>
+			and install the GeoGuessr Recording script. Get the script
+			<a class="text-blue-500" href="https://raw.githubusercontent.com/theyak/geoguessr-recorder/main/index.js">here</a>.
+			Note that this has only been tested on Google Chrome.
 		</p>
 		<ul role="list" class="link-card-grid">
 			<Card
-				href="https://docs.astro.build/"
+				href="https://github.com/theyak/astro-guessr/blob/main/README.md"
 				title="Documentation"
-				body="Learn how AstroGuessr works and explore the official API docs."
+				body="View the project README if you'd like to set up your own server. Strong tech knowledge required."
 			/>
 			<Card
 				href="/example-map"
-				title="Map Integrations"
-				body="Learn how to incorporate a Google Map into your Astro application."
+				title="Example Map Integration"
+				body="See a sample map of lots of points in Colorado, Wyoming, and Utah."
 			/>
 			<Card
-				href="https://astro.build/themes/"
-				title="Themes"
-				body="Explore a galaxy of community-built starter themes."
+				href="/visited"
+				title="Places Visted"
+				body="See places you've visted once I figure out how I want this to work."
 			/>
 			<Card
-				href="https://astro.build/chat/"
-				title="Community"
-				body="Come say hi to our amazing Discord community. ❤️"
+				href="/played"
+				title="Games Played"
+				body="See games you've played once I figure out how I want this to work."
 			/>
 		</ul>
 	</main>
-	<button id="try-post">Try Post Request</button>
 </Layout>
 
 

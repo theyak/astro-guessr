@@ -22,13 +22,13 @@ CREATE TABLE IF NOT EXISTS `locations` (
 	`map` CHAR(32) NOT NULL,
 	`game` CHAR(32) NOT NULL,
 	`round` INT NOT NULL,
-	`type` enum('original','guess','travel') NOT NULL,
+	`type` enum('start','guess','travel') NOT NULL,
 	`lat` DOUBLE NOT NULL,
 	`lng` DOUBLE NOT NULL,
 	`created_at` DATETIME NOT NULL,
 	PRIMARY KEY (`id`),
 	INDEX `user_lat_lng` (`user_token`, `lat`, `lng`),
-	INDEX `game` (`game`)
+	UNIQUE INDEX `game` (`game`, `type`, `lat`, `lng`)
 ) ENGINE = InnoDB;
 ```
 
@@ -38,10 +38,43 @@ CREATE TABLE IF NOT EXISTS `users` (
 	`email` VARCHAR(128) NULL DEFAULT NULL,
 	`sso_provider` CHAR (32) NULL DEFAULT NULL,
 	`sso_data` TEXT NULL DEFAULT NULL,
-	`request_count` BIGINT UNSIGNED NOT NULL,
+	`user_id` CHAR(32) NULL DEFAULT NULL,
+	`user_nick` VARCHAR(128) NULL DEFAULT NULL,
+	`games_played` BIGINT UNSIGNED NOT NULL DEFAULT 0,
+	`request_count` BIGINT UNSIGNED NOT NULL DEFAULT 0,
 	`last_request_at` DATETIME NOT NULL,
 	`created_at` DATETIME NOT NULL,
 	PRIMARY KEY (`user_token`)
+) ENGINE = InnoDB;
+```
+
+```sql
+CREATE TABLE IF NOT EXISTS `games` (
+	`game` CHAR(32) NOT NULL,
+	`user_token` CHAR(32) NOT NULL,
+	`user_id` CHAR(32) NULL DEFAULT NULL,
+	`map` CHAR(32) NOT NULL,
+	`rounds` INT UNSIGNED NOT NULL,
+	`moving` INT UNSIGNED NOT NULL,
+	`zooming` INT UNSIGNED NOT NULL,
+	`rotating` INT UNSIGNED NOT NULL,
+	`timeLimit` INT UNSIGNED NOT NULL,
+	`distance` DOUBLE NOT NULL,
+	`time` INT UNSIGNED NOT NULL,
+	`score` INT UNSIGNED NOT NULL,
+	`created_at` DATETIME NOT NULL,
+	PRIMARY KEY (`game`),
+	INDEX `token_map` (`user_token`, `map`),
+	INDEX `map` (`map`)
+) ENGINE = InnoDB;
+```
+
+```sql
+CREATE TABLE IF NOT EXISTS `maps` (
+	`map` CHAR(32) NOT NULL,
+	`mapName` VARCHAR(128) NOT NULL,
+	`times_played` BIGINT UNSIGNED NOT NULL DEFAULT 0,
+	PRIMARY KEY (`map`)
 ) ENGINE = InnoDB;
 ```
 
