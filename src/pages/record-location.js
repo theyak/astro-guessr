@@ -104,7 +104,7 @@ export const POST = async ({ request }) => {
 					lat < ? AND
 					lng > ? AND
 					lng < ? AND
-					type = "travel"
+					type = "${type}"
 			`;
 			results = await conn.execute(sql, [token, box.minLat, box.maxLat, box.minLng, box.maxLng]);
 			if (results.rows.length > 0) {
