@@ -22,7 +22,7 @@ CREATE TABLE IF NOT EXISTS `locations` (
 	`map` CHAR(32) NOT NULL,
 	`game` CHAR(32) NOT NULL,
 	`round` INT NOT NULL,
-	`type` enum('start','guess','travel') NOT NULL,
+	`type` enum('start','guess','travel','bookmark') NOT NULL,
 	`lat` DOUBLE NOT NULL,
 	`lng` DOUBLE NOT NULL,
 	`created_at` DATETIME NOT NULL,

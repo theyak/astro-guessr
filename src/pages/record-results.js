@@ -93,7 +93,6 @@ async function recordGame(conn, data) {
 			game = ?,
 			user_token = ?,
 			user_id = ?,
-			user_nick = ?,
 			map = ?,
 			rounds = ?,
 			moving = ?,
@@ -109,7 +108,7 @@ async function recordGame(conn, data) {
 	`;
 
 	try {
-		await conn.execute(sql, [game, token, userId, userNick, map, roundCount, moving, zooming, rotating, timeLimit, score, distance, time, time]);
+		await conn.execute(sql, [game, token, userId, map, roundCount, moving, zooming, rotating, timeLimit, score, distance, time, time]);
 	} catch (err) {
 		console.log(err);
 		throw new Error("Database error");

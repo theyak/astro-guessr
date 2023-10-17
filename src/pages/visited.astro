@@ -18,6 +18,7 @@ import Layout from "../layouts/Layout.astro";
 
 		const result = await fetch(`/get-locations?token=${token}`);
 		const rows = await result.json();
+		console.log(rows);
 
 		const markers = [];
 		const map = new Map(document.getElementById("map"), {

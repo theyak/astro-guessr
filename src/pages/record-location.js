@@ -77,7 +77,7 @@ export const POST = async ({ request }) => {
 		}
 
 		// Valid type?
-		if (["original", "guess", "travel"].indexOf(type) < 0) {
+		if (["original", "guess", "travel", "bookmark"].indexOf(type) < 0) {
 			return new Response(JSON.stringify({success: false, message: "Invalid type"}), { status: 400 });
 		}
 
@@ -93,22 +93,23 @@ export const POST = async ({ request }) => {
 		}
 
 		// Check if nearby location has already been recorded
-		const box = getBoundingBox(lat, lng, 200);
-		sql = `
-			SELECT *
-			FROM locations
-			WHERE
-				user_token = ? AND
-				lat > ? AND
-				lat < ? AND
-				lng > ? AND
-				lng < ? AND
-				type = "travel"
-		`;
-		results = await conn.execute(sql, [token, box.minLat, box.maxLat, box.minLng, box.maxLng]);
-		if (results.rows.length > 0) {
-			console.log("Point present");
-			return new Response(JSON.stringify({success: true, ...data}), {status: 200});
+		if (type === "travel" || type === "bookmark") {
+			const box = getBoundingBox(lat, lng, type === "bookmark" ? 10 : 200);
+			sql = `
+				SELECT *
+				FROM locations
+				WHERE
+					user_token = ? AND
+					lat > ? AND
+					lat < ? AND
+					lng > ? AND
+					lng < ? AND
+					type = "travel"
+			`;
+			results = await conn.execute(sql, [token, box.minLat, box.maxLat, box.minLng, box.maxLng]);
+			if (results.rows.length > 0) {
+				return new Response(JSON.stringify({success: true, ...data}), {status: 200});
+			}
 		}
 
 		// Finally insert the location
