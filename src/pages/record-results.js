@@ -159,6 +159,14 @@ async function recordLocations(conn, data) {
 	for (let round in rounds) {
 		const lat = rounds[round].lat;
 		const lng = rounds[round].lng;
+		let location = rounds[round].location || null;
+
+		if (location !== null) {
+			location = location.trim();
+			if (location.length > 64) {
+				location = location.substring(0, 64);
+			}
+		}
 
 		try {
 			checkPosition({lat, lng});
@@ -176,12 +184,13 @@ async function recordLocations(conn, data) {
 				type = ?,
 				lat = ?,
 				lng = ?,
+				location = ?,
 				created_at = NOW()
 			ON DUPLICATE KEY UPDATE
 				lng = ?
 		`;
 		try {
-			await conn.execute(sql, [token, map, game, (+round) + 1, "start", lat, lng, lng]);
+			await conn.execute(sql, [token, map, game, (+round) + 1, "start", lat, lng, location, lng]);
 		} catch (err) {
 			console.log(err);
 			throw new Error("Database error");
@@ -191,6 +200,14 @@ async function recordLocations(conn, data) {
 	for (let guess in guesses) {
 		const lat = guesses[guess].lat;
 		const lng = guesses[guess].lng;
+		let location = guesses[guess].location || null;
+
+		if (location !== null) {
+			location = location.trim();
+			if (location.length > 64) {
+				location = location.substring(0, 64);
+			}
+		}
 
 		try {
 			checkPosition({lat, lng});
@@ -208,12 +225,13 @@ async function recordLocations(conn, data) {
 				type = ?,
 				lat = ?,
 				lng = ?,
+				location = ?,
 				created_at = NOW()
 			ON DUPLICATE KEY UPDATE
-				lng = ?
+				location = ?
 		`;
 		try {
-			await conn.execute(sql, [token, map, game, (+guess) + 1, "guess", lat, lng, lng]);
+			await conn.execute(sql, [token, map, game, (+guess) + 1, "guess", lat, lng, location, location]);
 		} catch (err) {
 			console.log(err);
 			throw new Error("Database error");

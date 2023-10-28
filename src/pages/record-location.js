@@ -1,4 +1,5 @@
 import {connect} from "@planetscale/database";
+import NodeGeocoder from "node-geocoder";
 
 
 /**
@@ -32,7 +33,7 @@ export const POST = async ({ request }) => {
 	}
 
 	const data = await request.json();
-	let {token, lat, lng, map, game, round, type} = data;
+	let {token, lat, lng, map, game, round, type, location} = data;
 
 	// Connect to database (TODO: Abstract away to server hook)
 	const env = import.meta.env;
@@ -41,8 +42,6 @@ export const POST = async ({ request }) => {
 		username: env.DATABASE_USERNAME,
 		password: env.DATABASE_PASSWORD,
 	};
-
-	const conn = await connect(config);
 
 	try {
 		// Valid user token?
@@ -80,6 +79,17 @@ export const POST = async ({ request }) => {
 		if (["original", "guess", "travel", "bookmark"].indexOf(type) < 0) {
 			return new Response(JSON.stringify({success: false, message: "Invalid type"}), { status: 400 });
 		}
+
+		if (location) {
+			location = location.trim();
+			if (location.length > 64) {
+				location = location.substring(0, 64);
+			}
+		} else {
+			location = null;
+		}
+
+		const conn = await connect(config);
 
 		// Update user's metadata
 		results = await conn.execute(`
@@ -122,9 +132,11 @@ export const POST = async ({ request }) => {
 			type = ?,
 			lat = ?,
 			lng = ?,
+			location = ?,
 			created_at = NOW()
 		`;
-		await conn.execute(sql, [token, map, game, round, type, lat, lng]);
+
+		await conn.execute(sql, [token, map, game, round, type, lat, lng, location]);
 
 		return new Response(JSON.stringify({success: true, ...data}), {status: 200});
 	} catch (ex) {

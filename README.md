@@ -14,7 +14,7 @@ for its database. Make accounts for those if you have not already.
 
 In PlanetScale, create a database called geoguessr and in the control panel,
 create the following schema:
-
+ALTER TABLE `locations` ADD `location` VARCHAR(64) NULL DEFAULT NULL AFTER `lng`;
 ```sql
 CREATE TABLE IF NOT EXISTS `locations` (
 	`id` INT NOT NULL AUTO_INCREMENT,
@@ -25,6 +25,7 @@ CREATE TABLE IF NOT EXISTS `locations` (
 	`type` enum('start','guess','travel','bookmark') NOT NULL,
 	`lat` DOUBLE NOT NULL,
 	`lng` DOUBLE NOT NULL,
+	`location` VARCHAR(64) NULL DEFAULT NULL,
 	`created_at` DATETIME NOT NULL,
 	PRIMARY KEY (`id`),
 	INDEX `user_lat_lng` (`user_token`, `lat`, `lng`),
